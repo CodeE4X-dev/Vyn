@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" type="image/png" href="Assets/icon.png">
+    <title>fufu fafa</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <style>
+body {
+    margin: 0;
+    height: 100vh;
+    background: url('a1.bmp') no-repeat center center fixed;
+    background-size: cover;
+}
+
+        #background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -1;
+        }
+        #overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+            backdrop-filter: blur(10px);
+        }
+        #overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #dynamic-taphere {
+            color: white;
+            font-size: 3rem;
+            min-height: 3.5rem;
+            text-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+        #tap-here {
+            color: #ffffff;
+            font-size: 1.5rem;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+        .profile-container {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+            width: 400px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+        .profile-container:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+        .external-buttons {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 20px;
+            z-index: 10;
+        }
+        .external-buttons a {
+            background-color: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 50%;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 70px;
+            height: 70px;
+            font-weight: bold;
+            font-size: 24px;
+        }
+        .external-buttons a:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: scale(1.05);
+        }
+        .profile-container img {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid white;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+        }
+        .glow-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 10px white, 0 0 20px white, 0 0 30px white;
+}
+.glow-eye {
+    text-shadow: 0 0 10px white, 0 0 20px white, 0 0 30px white;
+}
+
+
+    </style>
+</head>
+<body>
+
+
+    <div id="overlay">
+        <div class="text-center">
+            <h1 id="dynamic-taphere" class="mb-4"></h1>
+            <p id="tap-here" class="animate-pulse">Tap Here</p>
+        </div>
+    </div>
+
+    <canvas id="background-canvas"></canvas>
+
+    <div class="container mx-auto px-4 py-16 relative z-10 flex items-center justify-center h-screen">
+        <div class="profile-container p-8 text-center relative">
+            <img src="a2.bmp" 
+                 alt="Isa" 
+                 class="w-40 h-40 mx-auto rounded-full border-4 border-red-500 object-cover mb-6">
+            
+                 <h2 class="glow-text">fufu fafa</h2>
+            <p class="text-gray-300 italic mb-4">"babu al lifetime"</p>
+            <div class="flex justify-center items-center mt-4">
+                <i class="fas fa-eye text-white text-2xl glow-eye"></i>
+                <span id="view-count" class="ml-2 text-white text-lg">0</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="external-buttons">
+        <a href="https://discord.com/users/878290186956603393" target="_blank">
+            <i class="fab fa-discord"></i>
+            </a>
+            <a href="https://open.spotify.com/playlist/6bT8rwIm5TPNQ4zFlYiKSA" target="_blank">
+                <i class="fab fa-spotify"></i>
+                </a>
+    </div>
+
+    <audio id="background-music" src="https://encrypted-bytes.com/download/7f8a4a7a14c62834c68dfa7df54d21665c6e2d77d96465aa2789d2a285f98924/7aa22f4e1797c53e3426c1623ddf89c4/02fc49e803d30dd3649852d86ddb3d90954f5e6e8a87491726f5065cf95ce36f1c96325367a2bc775cd914be88fc5c0c06d763f5482d43ab086950abe9d5fd37afa0f3ba4dbff1cec0fa9f51b0a11049/3212c04deae956665b7fbd833d4dc96d" preload="auto"></audio>
+
+    <script>
+        const taphereTitles = [
+            'Langit mulai gelap',
+            'Hati terasa sepi',
+            'Harapan tetap hidup'
+        ];
+
+        const dynamicTaphereEl = document.getElementById('dynamic-taphere');
+        let currentTaphereIndex = 0;
+        let isTaphereDeleting = false;
+        let taphereTypingSpeed = 100;
+        let taphereDeleteSpeed = 100;
+        let currentTaphereText = '';
+        let pauseTaphere = false;
+
+        function typingEffectTaphere() {
+            if (pauseTaphere) return;
+
+            const fullText = taphereTitles[currentTaphereIndex];
+
+            if (isTaphereDeleting) {
+                currentTaphereText = fullText.substring(0, currentTaphereText.length - 1);
+            } else {
+                currentTaphereText = fullText.substring(0, currentTaphereText.length + 1);
+            }
+
+            dynamicTaphereEl.textContent = currentTaphereText;
+
+            let speed = taphereTypingSpeed;
+
+            if (isTaphereDeleting) {
+                speed = taphereDeleteSpeed;
+            }
+
+            if (!isTaphereDeleting && currentTaphereText === fullText) {
+                pauseTaphere = true;
+                speed = 2000;
+                setTimeout(() => {
+                    isTaphereDeleting = true;
+                    pauseTaphere = false;
+                }, speed);
+            } else if (isTaphereDeleting && currentTaphereText === '') {
+                isTaphereDeleting = false;
+                currentTaphereIndex = (currentTaphereIndex + 1) % taphereTitles.length;
+                speed = 250;
+            }
+
+            setTimeout(typingEffectTaphere, speed);
+        }
+
+        function startBackgroundMusic() {
+            const music = document.getElementById('background-music');
+            music.play();
+        }
+        document.getElementById('overlay').addEventListener('click', () => {
+            document.getElementById('overlay').classList.add('hidden');
+            startBackgroundMusic();
+        });
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ 
+            canvas: document.getElementById('background-canvas'), 
+            alpha: true,
+            powerPreference: "high-performance"
+        });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearAlpha(0);
+
+        const starGeometry = new THREE.BufferGeometry();
+        const starCount = 2000;
+        const posArray = new Float32Array(starCount * 3);
+        const velocityArray = new Float32Array(starCount * 3);
+
+        for (let i = 0; i < starCount * 3; i += 3) {
+            posArray[i] = (Math.random() - 0.5) * 2000;
+            posArray[i + 1] = (Math.random() + 0.5) * 2000;
+            posArray[i + 2] = (Math.random() - 0.5) * 2000;
+            velocityArray[i] = (Math.random() - 0.5) * 2;
+            velocityArray[i + 1] = Math.random() * 5 + 2;
+            velocityArray[i + 2] = (Math.random() - 0.5) * 2;
+        }
+
+        starGeometry.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+
+        const starMaterial = new THREE.PointsMaterial({
+            color: 0xffffff,
+            size: 0.5,
+            blending: THREE.AdditiveBlending,
+            transparent: true,
+            opacity: 0.7
+        });
+
+        const starField = new THREE.Points(starGeometry, starMaterial);
+        scene.add(starField);
+
+        camera.position.z = 1000;
+
+        function animateStars() {
+            requestAnimationFrame(animateStars);
+            const positions = starField.geometry.attributes.position.array;
+            for (let i = 0; i < positions.length; i += 3) {
+                positions[i] += velocityArray[i];
+                positions[i + 1] -= velocityArray[i + 1];
+                positions[i + 2] += velocityArray[i + 2];
+                if (positions[i + 1] < -1000) {
+                    positions[i + 1] = 1000;
+                    positions[i] = (Math.random() - 0.5) * 2000;
+                    positions[i + 2] = (Math.random() - 0.5) * 2000;
+                }
+            }
+            starField.geometry.attributes.position.needsUpdate = true;
+            
+            renderer.render(scene, camera);
+        }
+        setTimeout(typingEffectTaphere, 500);
+        animateStars();
+        window.addEventListener('resize', () => {
+            const width = window.innerWidth;
+            const height = window.innerHeight;
+            
+            camera.aspect = width / height;
+            camera.updateProjectionMatrix();
+            
+            renderer.setSize(width, height);
+        })
+        document.addEventListener("DOMContentLoaded", function () {
+        let views = localStorage.getItem("profileViews") || 0;
+        views = parseInt(views) + 1;
+        localStorage.setItem("profileViews", views);
+        document.getElementById("view-count").textContent = views;
+    });
+    </script>
+</body>
+</html>

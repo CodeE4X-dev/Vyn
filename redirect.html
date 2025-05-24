@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>rblx teleporter</title>
+  <script>
+    window.onload = function () {
+      const query = new URLSearchParams(window.location.search);
+      const placeIdp = query.get("placeIdp");
+      const placeId = query.get("placeId");
+      const gameInstanceId = query.get("gameInstanceId");
+
+      let url = "";
+
+      if (placeIdp) {
+        url = `https://www.roblox.com/games/start?placeId=125224486950729&launchData=${placeIdp}%2C${gameInstanceId}`;
+      } else if (placeId && gameInstanceId) {
+        url = `roblox://experiences/start?placeId=${placeId}&gameInstanceId=${gameInstanceId}`;
+      }
+
+      if (url) {
+        setTimeout(() => {
+          const a = document.createElement("a");
+          a.href = url;
+          document.body.appendChild(a);
+          a.click();
+          document.getElementById("status").textContent = "Redirecting...";
+        }, 1000);
+      } else {
+        document.getElementById("status").textContent =
+          "Missing parameters. endpoint: /redirect.html?placeId=...&gameInstanceId=...";
+      }
+    };
+  </script>
+</head>
+<body style="font-family: Arial; font-size: small;">
+  <p id="status">Preparing...</p>
+  yohoooo <a href="https://discord.gg/6e6nY8a34A">https://discord.gg/vyntra</a> - Best Blade Ball Scripts
+</body>
+</html>
