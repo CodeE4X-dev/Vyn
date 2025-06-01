@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Zypherion</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap');
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0d1b2a 0%, #162a4a 100%);
+      font-family: 'Poppins', sans-serif;
+      color: #e0e1dd;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px 60px 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      width: 100%;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 30px;
+      perspective: 1200px;
+    }
+
+    .card {
+      background: #1b263b;
+      border-radius: 16px;
+      box-shadow: 0 15px 30px rgba(0, 123, 255, 0.4);
+      padding: 25px 30px 35px 30px;
+      color: #cbd5e1;
+      transform-style: preserve-3d;
+      transition: transform 0.4s ease;
+      cursor: pointer;
+      position: relative;
+      user-select: none;
+    }
+
+    .card:hover {
+      transform: rotateY(15deg) rotateX(10deg) scale(1.05);
+      box-shadow: 0 20px 40px rgba(0, 123, 255, 0.7);
+    }
+
+    .card h2 {
+      color: #61dafb;
+      margin: 0 0 10px 0;
+      font-weight: 600;
+      font-size: 1.7rem;
+      user-select: text;
+    }
+
+    .card .details {
+      font-size: 0.95rem;
+      line-height: 1.5;
+      margin-bottom: 18px;
+      color: #a8b2d1;
+      user-select: text;
+    }
+
+    .card .script-box {
+      background: #0d1b2a;
+      border: 1.5px solid #33415c;
+      border-radius: 10px;
+      padding: 15px;
+      font-family: 'Fira Mono', monospace, monospace;
+      font-size: 0.9rem;
+      color: #00ff99;
+      word-break: break-word;
+      margin-bottom: 18px;
+      user-select: all;
+      white-space: pre-wrap;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+
+    .btn-copy {
+      background-color: #0077b6;
+      border: none;
+      color: white;
+      font-weight: 600;
+      padding: 12px 22px;
+      font-size: 1rem;
+      border-radius: 10px;
+      transition: background-color 0.3s ease;
+      width: 100%;
+      user-select: none;
+    }
+
+    .btn-copy:hover {
+      background-color: #0096c7;
+    }
+
+    .copied-msg {
+      color: #00ff99;
+      font-size: 0.9rem;
+      position: absolute;
+      bottom: 15px;
+      right: 20px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      user-select: none;
+      pointer-events: none;
+    }
+
+    .copied-msg.show {
+      opacity: 1;
+    }
+
+    /* Scrollbar style for script box */
+    .script-box::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .script-box::-webkit-scrollbar-track {
+      background: #0d1b2a;
+      border-radius: 10px;
+    }
+
+    .script-box::-webkit-scrollbar-thumb {
+      background: #0077b6;
+      border-radius: 10px;
+    }
+
+    /* Tambahan style Discord Footer */
+    .discord-footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 1.1rem;
+      color: #a0aec0;
+      user-select: none;
+    }
+    .discord-footer a {
+      color: #61dafb;
+      font-weight: 600;
+      text-decoration: none;
+      margin-left: 8px;
+      transition: color 0.3s ease;
+    }
+    .discord-footer a:hover {
+      color: #90e0ef;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card" tabindex="0">
+      <h2>Murder Mystery 2</h2>
+      <div class="details">
+        <strong>Game:</strong> Murder Mystery 2<br />
+        <strong>Executors:</strong> Delta, Swift, and Other.
+      </div>
+      <pre class="script-box" id="script1">
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Zypherion-X19/Zy/refs/heads/main/mm2.lua"))()
+      </pre>
+      <button class="btn-copy" onclick="copyScript('script1', this)">📋 Copy Script</button>
+      <div class="copied-msg">✅ Copied!</div>
+    </div>
+
+    <div class="card" tabindex="0">
+      <h2>Blade Ball</h2>
+      <div class="details">
+        <strong>Game:</strong> Blade Ball<br />
+        <strong>Executors:</strong> Delta, Swift, and Other.
+      </div>
+      <pre class="script-box" id="script2">
+        loadstring(game:HttpGet("https://raw.githubusercontent.com/Zypherion-X19/Zy/refs/heads/main/Blade-Ball.lua"))()
+          </pre>
+      <button class="btn-copy" onclick="copyScript('script2', this)">📋 Copy Script</button>
+      <div class="copied-msg">✅ Copied!</div>
+    </div>
+
+    <div class="card" tabindex="0">
+      <h2>Skin Changer</h2>
+      <div class="details">
+        <strong>Game:</strong> Blade Ball<br />
+        <strong>Executors:</strong> Delta, Swift, and Other.
+      </div>
+      <pre class="script-box" id="script3">
+        getgenv().Gen = getgenv().Gen or {
+            SwModel = "Sword Name",
+            Animation = "Sword Name",
+            Slash = "Sword Name"
+        }
+        loadstring(game:HttpGet("https://api.luarmor.net/files/v3/loaders/f1cfaa45dddeda3f553806250af98fbe.lua"))()
+      </pre>
+      <button class="btn-copy" onclick="copyScript('script3', this)">📋 Copy Script</button>
+      <div class="copied-msg">✅ Copied!</div>
+    </div>
+  </div>
+
+  <div class="discord-footer">
+    Join our Discord for more scripts:
+    <a href="https://discord.gg/SkUd5SG9Vw" target="_blank" rel="noopener noreferrer">
+      discord.gg/SkUd5SG9Vw
+    </a>
+  </div>
+
+  <script>
+    function copyScript(id, btn) {
+      const scriptText = document.getElementById(id).innerText.trim();
+      navigator.clipboard.writeText(scriptText).then(() => {
+        const card = btn.parentElement;
+        const msg = card.querySelector('.copied-msg');
+        msg.classList.add('show');
+        setTimeout(() => msg.classList.remove('show'), 1800);
+      });
+    }
+  </script>
+</body>
+</html>
