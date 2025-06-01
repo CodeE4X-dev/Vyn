@@ -12,7 +12,8 @@ const htmlPages = [
   'notnsfw',
   'redirect',
   'token',
-  'xylaqt'
+  'xylaqt',
+  'Zypherion/Scripts'
 ];
 
 htmlPages.forEach(function (page) {
