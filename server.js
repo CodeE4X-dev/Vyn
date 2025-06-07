@@ -13,7 +13,8 @@ const htmlPages = [
   'redirect',
   'token',
   'xylaqt',
-  'Zypherion/Scripts'
+  'Zypherion/Scripts',
+  'jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/woho.html'
 ];
 
 htmlPages.forEach(function (page) {
