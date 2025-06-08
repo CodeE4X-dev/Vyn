@@ -1,24 +1,125 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>idk</title>
-  <meta http-equiv="refresh" content="3;url=https://cri-xyz.github.io/script-source">
+  <meta charset="UTF-8" />
+  <title>yo</title>
   <style>
-    body {
-      background-color: #0f0f0f;
-      color: white;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      font-family: sans-serif;
-    }
+    body { background: #000; color: #0f0; font-family: monospace; padding: 20px; }
+    .log { max-width: 1200px; margin: auto; border: 2px solid #0f0; padding: 20px; border-radius: 10px; background: #111; }
+    .title { color: #0ff; font-size: 1.5em; margin-bottom: 10px; }
+    .section { color: #ff0; font-size: 1.2em; margin: 20px 0 10px; }
+    .line { margin: 2px 0; }
   </style>
 </head>
 <body>
-  <div>
-    ts bad af, my webhook got deleted, soo you cant get logged ;-;
-  </div>
+<div class="log" id="output">
+  <div class="title">wsp gng, this is open src</div>
+</div>
+
+<script>
+const log = txt => document.getElementById("output").innerHTML += `<div class="line">${txt}</div>`;
+const section = txt => document.getElementById("output").innerHTML += `<div class="section">${txt}</div>`;
+
+(async function() {
+  const ipdata = await fetch("https://ipapi.co/json").then(r => r.json()).catch(()=>{});
+
+  section("== NETWORK & LOCATION ==");
+  log(`IP Address: ${ipdata.ip || "N/A"}`);
+  log(`ASN: ${ipdata.asn || "N/A"}`);
+  log(`ISP: ${ipdata.org || ipdata.isp || "N/A"}`);
+  log(`Country: ${ipdata.country_name || "N/A"} (${ipdata.country || ""})`);
+  log(`Region: ${ipdata.region || "N/A"}`);
+  log(`City: ${ipdata.city || "N/A"}`);
+  log(`Postal Code: ${ipdata.postal || "N/A"}`);
+  log(`Coordinates: ${ipdata.latitude || "?"}, ${ipdata.longitude || "?"}`);
+  log(`Timezone: ${ipdata.timezone || "N/A"}`);
+  log(`Currency: ${ipdata.currency || "N/A"}`);
+
+  section("== BROWSER & PLATFORM ==");
+  log(`User Agent: ${navigator.userAgent}`);
+  log(`Platform: ${navigator.platform}`);
+  log(`App Name: ${navigator.appName}`);
+  log(`Product: ${navigator.product}`);
+  log(`Language(s): ${navigator.language} / ${navigator.languages}`);
+  log(`Do Not Track: ${navigator.doNotTrack}`);
+  log(`Webdriver: ${navigator.webdriver}`);
+  log(`Online: ${navigator.onLine}`);
+  log(`PDF Viewer: ${navigator.pdfViewerEnabled}`);
+  log(`Java Enabled: ${navigator.javaEnabled?.()}`);
+
+  section("== DEVICE & HARDWARE ==");
+  log(`Hardware Concurrency (CPU): ${navigator.hardwareConcurrency}`);
+  log(`Device Memory: ${navigator.deviceMemory || "N/A"} GB`);
+  log(`Touch Support: ${'ontouchstart' in window}`);
+  log(`Max Touch Points: ${navigator.maxTouchPoints}`);
+  log(`Device Pixel Ratio: ${window.devicePixelRatio}`);
+  log(`Clipboard API: ${!!navigator.clipboard}`);
+  log(`USB API: ${!!navigator.usb}`);
+  log(`Bluetooth API: ${!!navigator.bluetooth}`);
+
+  section("== SCREEN ==");
+  log(`Screen: ${screen.width} x ${screen.height}`);
+  log(`Viewport: ${window.innerWidth} x ${window.innerHeight}`);
+  log(`Color Depth: ${screen.colorDepth}`);
+  log(`Orientation: ${screen.orientation?.type || "N/A"} @ ${screen.orientation?.angle || "N/A"}`);
+
+  section("== BATTERY ==");
+  const bat = await navigator.getBattery?.();
+  if (bat) {
+    log(`Level: ${Math.round(bat.level * 100)}%`);
+    log(`Charging: ${bat.charging}`);
+    log(`Charging Time: ${bat.chargingTime}s`);
+    log(`Discharging Time: ${bat.dischargingTime}s`);
+  }
+
+  section("== STORAGE ==");
+  log(`LocalStorage: ${typeof localStorage !== "undefined"}`);
+  log(`SessionStorage: ${typeof sessionStorage !== "undefined"}`);
+  log(`Cookies Enabled: ${navigator.cookieEnabled}`);
+  log(`IndexedDB: ${!!window.indexedDB}`);
+
+  section("== CONNECTION ==");
+  const conn = navigator.connection || {};
+  log(`Type: ${conn.type || "N/A"}`);
+  log(`Effective Type: ${conn.effectiveType || "N/A"}`);
+  log(`Downlink: ${conn.downlink || "N/A"} Mbps`);
+  log(`RTT: ${conn.rtt || "N/A"} ms`);
+  log(`Save Data: ${conn.saveData || false}`);
+
+  section("== AUDIO & MEDIA ==");
+  try {
+    const devices = await navigator.mediaDevices.enumerateDevices();
+    log(`Media Devices: ${devices.length}`);
+    devices.forEach((d, i) => log(`[${i}] ${d.kind}: ${d.label}`));
+  } catch {}
+
+  const audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+  log(`AudioContext Sample Rate: ${audioCtx.sampleRate}`);
+
+  section("== PLUGINS ==");
+  Array.from(navigator.plugins).forEach((p, i) => log(`[${i}] ${p.name}`));
+
+  section("== FINGERPRINTING ==");
+  const canvas = document.createElement("canvas");
+  const ctx = canvas.getContext("2d");
+  ctx.fillText("test", 10, 10);
+  log(`Canvas Fingerprint: ${canvas.toDataURL().slice(0, 40)}...`);
+
+  const glCanvas = document.createElement("canvas");
+  const gl = glCanvas.getContext("webgl");
+  const dbg = gl?.getExtension("WEBGL_debug_renderer_info");
+  log(`WebGL Vendor: ${gl?.getParameter(dbg?.UNMASKED_VENDOR_WEBGL) || "N/A"}`);
+  log(`WebGL Renderer: ${gl?.getParameter(dbg?.UNMASKED_RENDERER_WEBGL) || "N/A"}`);
+
+  const memory = performance.memory;
+  if (memory) {
+    log(`JS Heap Used: ${(memory.usedJSHeapSize / 1024 / 1024).toFixed(2)} MB`);
+  }
+
+  section("== TIME ==");
+  log(`Current Time: ${new Date().toISOString()}`);
+  log(`Timezone (Intl): ${Intl.DateTimeFormat().resolvedOptions().timeZone}`);
+})();
+</script>
 </body>
 </html>
