@@ -12,6 +12,7 @@ const htmlPages = [
   'notnsfw',
   'redirect',
   'token',
+  'CodeRemover',
   'xylaqt',
   'Zypherion/Scripts',
   'jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/woho.html'
