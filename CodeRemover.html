@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Code Comment Remover</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            animation: fadeInDown 1s ease-out;
+        }
+
+        .header h1 {
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: rgba(255,255,255,0.9);
+            font-size: 1.2rem;
+            font-weight: 300;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease-out 0.3s both;
+        }
+
+        .panel {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255,255,255,0.2);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.2);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .panel h2 {
+            color: white;
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            animation: fadeInUp 1s ease-out 0.6s both;
+            flex-wrap: wrap;
+        }
+
+        .control-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            color: white;
+            font-weight: 500;
+            font-size: 0.9rem;
+        }
+
+        select, input[type="file"] {
+            padding: 12px 16px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        select:hover, input[type="file"]:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-2px);
+        }
+
+        select:focus, input[type="file"]:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.3);
+        }
+
+        select option {
+            background: #2a2a2a;
+            color: white;
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+            max-height: 400px;
+            min-height: 400px;
+            padding: 20px;
+            border: none;
+            border-radius: 15px;
+            background: rgba(0,0,0,0.3);
+            color: white;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: none;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+            overflow-y: auto;
+        }
+
+        textarea:hover {
+            background: rgba(0,0,0,0.4);
+            border-color: rgba(255,255,255,0.3);
+        }
+
+        textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(255,255,255,0.2);
+            background: rgba(0,0,0,0.5);
+        }
+
+        textarea::placeholder {
+            color: rgba(255,255,255,0.5);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            animation: fadeInUp 1s ease-out 0.9s both;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 50px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            overflow: hidden;
+            min-width: 150px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a24);
+            color: white;
+            box-shadow: 0 4px 15px rgba(255,107,107,0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255,107,107,0.6);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #4834d4, #686de0);
+            color: white;
+            box-shadow: 0 4px 15px rgba(72,52,212,0.4);
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(72,52,212,0.6);
+        }
+
+        .btn-success {
+            background: linear-gradient(45deg, #00d2d3, #54a0ff);
+            color: white;
+            box-shadow: 0 4px 15px rgba(0,210,211,0.4);
+        }
+
+        .btn-success:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0,210,211,0.6);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+            animation: fadeInUp 1s ease-out 1.2s both;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(20px);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid rgba(255,255,255,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255,255,255,0.15);
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #ff6b6b;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+        }
+
+        .floating-shapes {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .shape {
+            position: absolute;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 4s;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        .notification.success {
+            background: rgba(34, 197, 94, 0.9);
+        }
+
+        .notification.error {
+            background: rgba(239, 68, 68, 0.9);
+        }
+
+        .notification.info {
+            background: rgba(59, 130, 246, 0.9);
+        }
+
+        .textarea-container {
+            position: relative;
+        }
+
+        .line-numbers {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 50px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px 0 0 15px;
+            padding: 20px 5px;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: rgba(255,255,255,0.5);
+            text-align: right;
+            overflow: hidden;
+            user-select: none;
+            pointer-events: none;
+        }
+
+        .textarea-with-lines {
+            padding-left: 70px;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0px);
+            }
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            textarea {
+                height: 300px;
+                max-height: 300px;
+                min-height: 300px;
+            }
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* Textarea scrollbar styling */
+        textarea::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        textarea::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.1);
+            border-radius: 6px;
+        }
+
+        textarea::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 6px;
+        }
+
+        textarea::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>Code Comment Remover</h1>
+            <p>Remove comments from your code in 100+ programming languages</p>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="language">Select Language</label>
+                <select id="language">
+                    <option value="auto">Auto Detect</option>
+                    <option value="c">C</option>
+                    <option value="cpp">C++</option>
+                    <option value="csharp">C#</option>
+                    <option value="java">Java</option>
+                    <option value="javascript">JavaScript</option>
+                    <option value="typescript">TypeScript</option>
+                    <option value="python">Python</option>
+                    <option value="ruby">Ruby</option>
+                    <option value="perl">Perl</option>
+                    <option value="php">PHP</option>
+                    <option value="swift">Swift</option>
+                    <option value="kotlin">Kotlin</option>
+                    <option value="go">Go</option>
+                    <option value="rust">Rust</option>
+                    <option value="dart">Dart</option>
+                    <option value="scala">Scala</option>
+                    <option value="groovy">Groovy</option>
+                    <option value="objc">Objective-C</option>
+                    <option value="haskell">Haskell</option>
+                    <option value="lua">Lua</option>
+                    <option value="r">R</option>
+                    <option value="julia">Julia</option>
+                    <option value="bash">Bash</option>
+                    <option value="zsh">Zsh</option>
+                    <option value="powershell">PowerShell</option>
+                    <option value="sql">SQL</option>
+                    <option value="plsql">PL/SQL</option>
+                    <option value="matlab">MATLAB</option>
+                    <option value="assembly">Assembly</option>
+                    <option value="fortran">Fortran</option>
+                    <option value="cobol">COBOL</option>
+                    <option value="pascal">Pascal</option>
+                    <option value="ada">Ada</option>
+                    <option value="vhdl">VHDL</option>
+                    <option value="verilog">Verilog</option>
+                    <option value="fsharp">F#</option>
+                    <option value="ocaml">OCaml</option>
+                    <option value="rescript">ReScript</option>
+                    <option value="nim">Nim</option>
+                    <option value="crystal">Crystal</option>
+                    <option value="elixir">Elixir</option>
+                    <option value="erlang">Erlang</option>
+                    <option value="lisp">Lisp</option>
+                    <option value="scheme">Scheme</option>
+                    <option value="prolog">Prolog</option>
+                    <option value="solidity">Solidity</option>
+                    <option value="zig">Zig</option>
+                    <option value="d">D</option>
+                    <option value="coffeescript">CoffeeScript</option>
+                    <option value="elm">Elm</option>
+                    <option value="haxe">Haxe</option>
+                    <option value="awk">AWK</option>
+                    <option value="makefile">Makefile</option>
+                    <option value="yaml">YAML</option>
+                    <option value="toml">TOML</option>
+                    <option value="ini">INI</option>
+                    <option value="json5">JSON5</option>
+                    <option value="hcl">HCL (Terraform)</option>
+                    <option value="gdscript">GDScript</option>
+                    <option value="tex">TeX/LaTeX</option>
+                </select>
+            </div>
+            <div class="control-group">
+                <label for="fileInput">Upload File</label>
+                <input type="file" id="fileInput" accept=".txt,.js,.py,.java,.cpp,.c,.cs,.php,.rb,.go,.rs,.swift,.kt,.ts,.html,.css,.sql,.sh,.ps1,.m,.r,.jl,.hs,.lua,.pl,.scala,.groovy,.dart,.nim,.zig,.d,.coffee,.elm,.hx,.awk,.yaml,.yml,.toml,.ini,.hcl,.gd,.tex,.latex">
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="panel">
+                <h2>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                    Input Code
+                </h2>
+                <textarea id="inputCode" placeholder="Paste your code here or upload a file..."></textarea>
+            </div>
+            <div class="panel">
+                <h2>
+                    <svg class="icon" viewBox="0 0 24 24">
+                        <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                    Output Code
+                </h2>
+                <textarea id="outputCode" placeholder="Cleaned code will appear here..." readonly></textarea>
+            </div>
+        </div>
+
+        <div class="button-group">
+            <button class="btn btn-primary" onclick="removeComments()">
+                <svg class="icon" style="width: 20px; height: 20px; margin-right: 8px;" viewBox="0 0 24 24">
+                    <path d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"/>
+                </svg>
+                Remove Comments
+            </button>
+            <button class="btn btn-secondary" onclick="copyToClipboard()">
+                <svg class="icon" style="width: 20px; height: 20px; margin-right: 8px;" viewBox="0 0 24 24">
+                    <path d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"/>
+                </svg>
+                Copy Result
+            </button>
+            <button class="btn btn-success" onclick="downloadResult()">
+                <svg class="icon" style="width: 20px; height: 20px; margin-right: 8px;" viewBox="0 0 24 24">
+                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                </svg>
+                Download
+            </button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-number" id="originalLines">0</div>
+                <div class="stat-label">Original Lines</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="cleanedLines">0</div>
+                <div class="stat-label">Cleaned Lines</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="removedComments">0</div>
+                <div class="stat-label">Comments Removed</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="compressionRatio">0%</div>
+                <div class="stat-label">Size Reduction</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script>
+        const languagePatterns = {
+            c: { single: '//', multi: [['/*', '*/']] },
+            cpp: { single: '//', multi: [['/*', '*/']] },
+            csharp: { single: '//', multi: [['/*', '*/']] },
+            java: { single: '//', multi: [['/*', '*/']] },
+            javascript: { single: '//', multi: [['/*', '*/']] },
+            typescript: { single: '//', multi: [['/*', '*/']] },
+            python: { single: '#', multi: [['"""', '"""'], ["'''", "'''"]] },
+            ruby: { single: '#', multi: [['=begin', '=end']] },
+            perl: { single: '#', multi: [] },
+            php: { single: ['//', '#'], multi: [['/*', '*/']] },
+            swift: { single: '//', multi: [['/*', '*/']] },
+            kotlin: { single: '//', multi: [['/*', '*/']] },
+            go: { single: '//', multi: [['/*', '*/']] },
+            rust: { single: '//', multi: [['/*', '*/']] },
+            dart: { single: '//', multi: [['/*', '*/']] },
+            scala: { single: '//', multi: [['/*', '*/']] },
+            groovy: { single: '//', multi: [['/*', '*/']] },
+            objc: { single: '//', multi: [['/*', '*/']] },
+            haskell: { single: '--', multi: [['{-', '-}']] },
+            lua: { single: '--', multi: [['--[[', ']]']] },
+            r: { single: '#', multi: [] },
+            julia: { single: '#', multi: [['#=', '=#']] },
+            bash: { single: '#', multi: [] },
+            zsh: { single: '#', multi: [] },
+            powershell: { single: '#', multi: [['<#', '#>']] },
+            sql: { single: '--', multi: [['/*', '*/']] },
+            plsql: { single: '--', multi: [['/*', '*/']] },
+            matlab: { single: '%', multi: [['%{', '%}']] },
+            assembly: { single: ';', multi: [] },
+            fortran: { single: '!', multi: [] },
+            cobol: { single: '*', multi: [] },
+            pascal: { single: ['//', '{}'], multi: [['(*', '*)']] },
+            ada: { single: '--', multi: [] },
+            vhdl: { single: '--', multi: [] },
+            verilog: { single: '//', multi: [['/*', '*/']] },
+            fsharp: { single: '//', multi: [['(*', '*)']] },
+            ocaml: { single: '', multi: [['(*', '*)']] },
+            rescript: { single: '//', multi: [['/*', '*/']] },
+            nim: { single: '#', multi: [['#[', ']#']] },
+            crystal: { single: '#', multi: [] },
+            elixir: { single: '#', multi: [] },
+            erlang: { single: '%', multi: [] },
+            lisp: { single: ';', multi: [] },
+            scheme: { single: ';', multi: [] },
+            prolog: { single: '%', multi: [['/*', '*/']] },
+            solidity: { single: '//', multi: [['/*', '*/']] },
+            zig: { single: '//', multi: [] },
+            d: { single: '//', multi: [['/*', '*/']] },
+            coffeescript: { single: '#', multi: [['###', '###']] },
+            elm: { single: '--', multi: [['{-', '-}']] },
+            haxe: { single: '//', multi: [['/*', '*/']] },
+            awk: { single: '#', multi: [] },
+            makefile: { single: '#', multi: [] },
+            yaml: { single: '#', multi: [] },
+            toml: { single: '#', multi: [] },
+            ini: { single: [';', '#'], multi: [] },
+            json5: { single: '//', multi: [['/*', '*/']] },
+            hcl: { single: ['#', '//'], multi: [['/*', '*/']] },
+            gdscript: { single: '#', multi: [] },
+            tex: { single: '%', multi: [] }
+        };
+
+        function detectLanguage(code) {
+            const patterns = {
+                javascript: [/function\s+\w+\s*\(/, /const\s+\w+\s*=/, /let\s+\w+\s*=/, /var\s+\w+\s*=/],
+                python: [/def\s+\w+\s*\(/, /import\s+\w+/, /from\s+\w+\s+import/, /if\s+__name__\s*==\s*['"']__main__['"']/],
+                java: [/public\s+class\s+\w+/, /public\s+static\s+void\s+main/, /import\s+java\./],
+                cpp: [/#include\s*<\w+>/, /using\s+namespace\s+std/, /int\s+main\s*\(/],
+                c: [/#include\s*<\w+\.h>/, /int\s+main\s*\(/, /printf\s*\(/],
+                csharp: [/using\s+System/, /namespace\s+\w+/, /public\s+class\s+\w+/],
+                php: [/<\?php/, /\$\w+\s*=/, /echo\s+/],
+                ruby: [/def\s+\w+/, /require\s+['"]/, /puts\s+/],
+                go: [/package\s+main/, /import\s+['"]/, /func\s+main\s*\(/],
+                rust: [/fn\s+main\s*\(/, /use\s+std::/, /let\s+mut\s+/],
+                swift: [/import\s+Foundation/, /func\s+\w+\s*\(/, /var\s+\w+\s*:/],
+                kotlin: [/fun\s+main\s*\(/, /import\s+kotlin/, /val\s+\w+\s*=/]
+            };
+
+            for (const [lang, regexes] of Object.entries(patterns)) {
+                if (regexes.some(regex => regex.test(code))) {
+                    return lang;
+                }
+            }
+            return 'javascript'; 
+        }
+
+        function removeComments() {
+            const inputCode = document.getElementById('inputCode').value;
+            const selectedLanguage = document.getElementById('language').value;
+            
+            if (!inputCode.trim()) {
+                showNotification('Please enter some code first!', 'error');
+                return;
+            }
+
+            const language = selectedLanguage === 'auto' ? detectLanguage(inputCode) : selectedLanguage;
+            const pattern = languagePatterns[language] || languagePatterns.javascript;
+            
+            let cleanedCode = inputCode;
+            let removedCount = 0;
+
+            if (pattern.single) {
+                const singlePatterns = Array.isArray(pattern.single) ? pattern.single : [pattern.single];
+                singlePatterns.forEach(singleComment => {
+                    if (singleComment) {
+                        const regex = new RegExp(`${escapeRegex(singleComment)}.*$`, 'gm');
+                        const matches = cleanedCode.match(regex);
+                        if (matches) removedCount += matches.length;
+                        cleanedCode = cleanedCode.replace(regex, '');
+                    }
+                });
+            }
+
+            if (pattern.multi && pattern.multi.length > 0) {
+                pattern.multi.forEach(([start, end]) => {
+                    const regex = new RegExp(`${escapeRegex(start)}[\\s\\S]*?${escapeRegex(end)}`, 'g');
+                    const matches = cleanedCode.match(regex);
+                    if (matches) removedCount += matches.length;
+                    cleanedCode = cleanedCode.replace(regex, '');
+                });
+            }
+
+            cleanedCode = cleanedCode.replace(/\n\s*\n\s*\n/g, '\n\n').trim();
+
+            document.getElementById('outputCode').value = cleanedCode;
+            updateStats(inputCode, cleanedCode, removedCount);
+            showNotification(`Successfully removed ${removedCount} comments!`, 'success');
+        }
+
+        function escapeRegex(string) {
+            return string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        }
+
+        function updateStats(original, cleaned, removed) {
+            const originalLines = original.split('\n').length;
+            const cleanedLines = cleaned.split('\n').length;
+            const compressionRatio = Math.round(((original.length - cleaned.length) / original.length) * 100);
+
+            document.getElementById('originalLines').textContent = originalLines;
+            document.getElementById('cleanedLines').textContent = cleanedLines;
+            document.getElementById('removedComments').textContent = removed;
+            document.getElementById('compressionRatio').textContent = compressionRatio + '%';
+
+            animateNumber('originalLines', originalLines);
+            animateNumber('cleanedLines', cleanedLines);
+            animateNumber('removedComments', removed);
+        }
+
+        function animateNumber(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            const startValue = 0;
+            const duration = 1000;
+            const startTime = performance.now();
+
+            function updateNumber(currentTime) {
+                const elapsed = currentTime - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                const currentValue = Math.floor(startValue + (targetValue - startValue) * progress);
+                
+                if (elementId === 'compressionRatio') {
+                    element.textContent = currentValue + '%';
+                } else {
+                    element.textContent = currentValue;
+                }
+
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                }
+            }
+
+            requestAnimationFrame(updateNumber);
+        }
+
+        function copyToClipboard() {
+            const outputCode = document.getElementById('outputCode').value;
+            if (!outputCode.trim()) {
+                showNotification('No code to copy!', 'error');
+                return;
+            }
+
+            navigator.clipboard.writeText(outputCode).then(() => {
+                showNotification('Code copied to clipboard!', 'success');
+            }).catch(() => {
+                showNotification('Failed to copy code!', 'error');
+            });
+        }
+
+        function downloadResult() {
+            const outputCode = document.getElementById('outputCode').value;
+            if (!outputCode.trim()) {
+                showNotification('No code to download!', 'error');
+                return;
+            }
+
+            const blob = new Blob([outputCode], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'cleaned_code.txt';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showNotification('Code downloaded successfully!', 'success');
+        }
+
+        function showNotification(message, type) {
+            const notification = document.getElementById('notification');
+            notification.textContent = message;
+            notification.className = `notification show ${type}`;
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('inputCode').value = e.target.result;
+                    showNotification('File uploaded successfully!', 'success');
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        document.addEventListener('keydown', function(e) {
+            if (e.ctrlKey || e.metaKey) {
+                switch(e.key) {
+                    case 'Enter':
+                        e.preventDefault();
+                        removeComments();
+                        break;
+                    case 'c':
+                        if (e.shiftKey) {
+                            e.preventDefault();
+                            copyToClipboard();
+                        }
+                        break;
+                    case 's':
+                        if (e.shiftKey) {
+                            e.preventDefault();
+                            downloadResult();
+                        }
+                        break;
+                }
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            showNotification('Welcome! Upload a file or paste your code to get started.', 'info');
+        });
+    </script>
+</body>
+</html>
