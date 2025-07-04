@@ -14,6 +14,7 @@ const htmlPages = [
   'token',
   'CodeRemover',
   'xylaqt',
+  'Check',
   'Zypherion/Scripts',
   'jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/woho.html'
 ];
