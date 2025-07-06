@@ -1,1 +1,72 @@
-nothing here:) but heres some endpoint /CodeRemover /redirect /xylaqt btw this open src https://github.com/CodeE4X-dev/Vyn all website code made by isa
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Vyn</title>
+  <style>
+    body {
+      background-color: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      text-align: center;
+    }
+
+    .container {
+      background: #161b22;
+      padding: 20px 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0, 255, 255, 0.1);
+      max-width: 90%;
+    }
+
+    .visitor {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #58a6ff;
+    }
+
+    code {
+      background: #21262d;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    a {
+      color: #58a6ff;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <p>Nothing here :) but here are some endpoints:</p>
+    <p>
+      <code>/CodeRemover</code>,
+      <code>/redirect</code>,
+      <code>/xylaqt</code>
+    </p>
+    <p>btw this is open source → <a href="https://github.com/CodeE4X-dev/Vyn" target="_blank">GitHub</a></p>
+    <p class="visitor">You’ve visited this page <span id="view-count">0</span> times.</p>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      let views = localStorage.getItem("profileViews") || 0;
+      views = parseInt(views) + 1;
+      localStorage.setItem("profileViews", views);
+      document.getElementById("view-count").textContent = views;
+    });
+  </script>
+</body>
+</html>
