@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <title>Giveaway</title>
+  <style>
+    body {
+      background: #0e0e10;
+      color: white;
+      font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    button, input {
+      padding: 10px;
+      margin: 10px;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    button {
+      background: #1f8ef1;
+      color: white;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    button:hover {
+      background: #0d6efd;
+    }
+    .modal, .form-section {
+      background: #1e1e2f;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px #00000088;
+    }
+    .hidden {
+      display: none;
+    }
+    label {
+      display: block;
+      margin-top: 10px;
+    }
+    input {
+      width: 100%;
+      background: #2c2c3a;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+
+  <button id="openRules">🎁 Masuk Giveaway</button>
+
+  <div class="modal hidden" id="rulesModal">
+    <h3>📜 Peraturan Giveaway</h3>
+    <ul>
+      <li>1. Tau Cara Membuat Gamepass(kalo gak tau, cari youtube)</li>
+      <li>2. maen rosblok</li>
+      <li>3. website ini jelek, jgn hina, soalnya gk niat bikin</li>
+    </ul>
+    <button id="agreeBtn">Saya Setuju</button>
+  </div>
+
+  <form id="giveawayForm" class="form-section hidden">
+    <h3>📝 Isi Data Anda</h3>
+    <label>No WhatsApp</label>
+    <input type="text" id="wa" required>
+
+    <label>Roblox Username</label>
+    <input type="text" id="roblox" required>
+
+    <label>Nama Asli</label>
+    <input type="text" id="nama" required>
+
+    <button type="submit">Kirim</button>
+  </form>
+
+  <script>
+    const rulesModal = document.getElementById('rulesModal');
+    const openRules = document.getElementById('openRules');
+    const agreeBtn = document.getElementById('agreeBtn');
+    const form = document.getElementById('giveawayForm');
+
+    openRules.onclick = () => {
+      rulesModal.classList.remove('hidden');
+      openRules.classList.add('hidden');
+    };
+
+    agreeBtn.onclick = () => {
+      rulesModal.classList.add('hidden');
+      form.classList.remove('hidden');
+    };
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+
+      const wa = document.getElementById('wa').value;
+      const roblox = document.getElementById('roblox').value;
+      const nama = document.getElementById('nama').value;
+
+      const webhookURL = "https://discord.com/api/webhooks/1394951459912683622/0vesOMzMszRYA9ov2NwUsTxslB8CJ2t0UHOf87dNC36Zw_ifzWiJ92OBGS2yLC0-Gj-r"; // Ganti dengan URL webhook kamu
+
+      const payload = {
+        embeds: [{
+          title: "🎉 Pendaftaran Giveaway Baru",
+          color: 0x1f8ef1,
+          fields: [
+            { name: "📱 No WA", value: wa, inline: false },
+            { name: "🕹️ Roblox Username", value: roblox, inline: false },
+            { name: "🧑 Nama Asli", value: nama, inline: false }
+          ],
+          timestamp: new Date().toISOString()
+        }]
+      };
+
+      await fetch(webhookURL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      alert("✅ Data berhasil dikirim!, tinggal tunggu diumumin(nanti di dm whatsapp)");
+      form.reset();
+    };
+  </script>
+</body>
+</html>
