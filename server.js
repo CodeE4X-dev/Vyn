@@ -16,6 +16,7 @@ const htmlPages = [
   'xylaqt',
   'Check',
   'Zypherion/Scripts',
+  'AkuWongJawa',
   'jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/jawa/woho.html'
 ];
 
